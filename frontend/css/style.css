@@ -1,0 +1,13 @@
+:root {
+    --bs-body-bg: #f8f9fa;
+}
+[data-bs-theme="dark"] {
+    --bs-body-bg: #212529;
+    --bs-body-color: #f8f9fa;
+}
+.card {
+    transition: transform 0.2s;
+}
+.card:hover {
+    transform: translateY(-3px);
+}

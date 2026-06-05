@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clasificador IA - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="sidebar-placeholder"></div>
+    <div id="app" class="container-fluid px-4 py-4">
+        <h2>Panel de Control</h2>
+        <div class="row g-3" id="stats-cards">
+            <!-- Se llenan con JS -->
+        </div>
+    </div>
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Cargar sidebar
+            const sidebarResp = await fetch('sidebar.html');
+            document.getElementById('sidebar-placeholder').innerHTML = await sidebarResp.text();
+            // Cargar estadísticas
+            const datasets = await api.getDatasets();
+            const trainings = await api.getTrainings();
+            const totalDatasets = datasets.length;
+            const totalTrainings = trainings.length;
+            let avgAcc = 0;
+            if (trainings.length > 0) {
+                avgAcc = (trainings.reduce((sum, t) => sum + t.accuracy, 0) / trainings.length * 100).toFixed(1);
+            }
+            let lastPred = "Ninguna";
+            // Podríamos obtener la última predicción del endpoint correspondiente
+            document.getElementById('stats-cards').innerHTML = `
+                <div class="col-xl-3 col-md-6">
+                    <div class="card border-start border-primary border-4 shadow-sm">
+                        <div class="card-body d-flex justify-content-between">
+                            <div><h5 class="text-muted">Datasets</h5><h2>${totalDatasets}</h2></div>
+                            <i class="bi bi-files text-primary display-5"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card border-start border-success border-4 shadow-sm">
+                        <div class="card-body d-flex justify-content-between">
+                            <div><h5 class="text-muted">Modelos</h5><h2>${totalTrainings}</h2></div>
+                            <i class="bi bi-cpu text-success display-5"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card border-start border-info border-4 shadow-sm">
+                        <div class="card-body d-flex justify-content-between">
+                            <div><h5 class="text-muted">Precisión Promedio</h5><h2>${avgAcc}%</h2></div>
+                            <i class="bi bi-graph-up text-info display-5"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card border-start border-warning border-4 shadow-sm">
+                        <div class="card-body d-flex justify-content-between">
+                            <div><h5 class="text-muted">Última Predicción</h5><h5>${lastPred}</h5></div>
+                            <i class="bi bi-magic text-warning display-5"></i>
+                        </div>
+                    </div>
+                </div>`;
+        });
+    </script>
+</body>
+</html>
