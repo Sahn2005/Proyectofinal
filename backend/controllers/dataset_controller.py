@@ -23,10 +23,10 @@ def list_datasets():
 @dataset_bp.route('/upload', methods=['POST'])
 def upload_dataset():
     if 'file' not in request.files:
-        return jsonify({'error': 'No se envi� archivo'}), 400
+        return jsonify({'error': 'No se envió archivo'}), 400  # ← corregido
     file = request.files['file']
     if file.filename == '':
-        return jsonify({'error': 'Nombre vac�o'}), 400
+        return jsonify({'error': 'Nombre vacío'}), 400         # ← corregido
     if not allowed_file(file.filename):
         return jsonify({'error': 'Solo se permiten CSV'}), 400
     filename = secure_filename(file.filename)
