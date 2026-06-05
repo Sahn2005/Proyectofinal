@@ -1,74 +1,725 @@
 <!DOCTYPE html>
-<html lang="es" data-bs-theme="light">
+<html lang="es" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clasificador IA - Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LogReg AI — Clasificación con Regresión Logística</title>
+  <meta name="description" content="Plataforma académica para entrenar, evaluar y desplegar modelos de Machine Learning basados en Regresión Logística. Curso de IA 2026." />
+
+  <!-- Bootstrap 5 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-    <div id="sidebar-placeholder"></div>
-    <div id="app" class="container-fluid px-4 py-4">
-        <h2>Panel de Control</h2>
-        <div class="row g-3" id="stats-cards">
-            <!-- Se llenan con JS -->
-        </div>
+
+<!-- ── NAVBAR ──────────────────────────────────────────────────────────────── -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+  <div class="container">
+    <a class="navbar-brand" href="index.html">
+      <div class="brand-icon">🧠</div>
+      LogReg<span class="brand-dot">AI</span>
+    </a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-label="Toggle navigation">
+      <span style="color:#fff;font-size:1.4rem"><i class="bi bi-list"></i></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav ms-auto align-items-center gap-1">
+        <li class="nav-item"><a class="nav-link-custom active" href="index.html">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link-custom" href="dashboard.html">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link-custom" href="train.html">Entrenar</a></li>
+        <li class="nav-item"><a class="nav-link-custom" href="evaluate.html">Evaluar</a></li>
+        <li class="nav-item"><a class="nav-link-custom" href="predict.html">Predecir</a></li>
+        <li class="nav-item ms-2">
+          <a class="btn-nav-cta nav-link-custom" href="dashboard.html">
+            <i class="bi bi-rocket-takeoff"></i> Comenzar
+          </a>
+        </li>
+        <li class="nav-item ms-1">
+          <button class="theme-toggle" id="themeBtn" title="Cambiar tema">🌙</button>
+        </li>
+      </ul>
     </div>
-    <script src="js/api.js"></script>
-    <script src="js/main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Cargar sidebar
-            const sidebarResp = await fetch('sidebar.html');
-            document.getElementById('sidebar-placeholder').innerHTML = await sidebarResp.text();
-            // Cargar estadísticas
-            const datasets = await api.getDatasets();
-            const trainings = await api.getTrainings();
-            const totalDatasets = datasets.length;
-            const totalTrainings = trainings.length;
-            let avgAcc = 0;
-            if (trainings.length > 0) {
-                avgAcc = (trainings.reduce((sum, t) => sum + t.accuracy, 0) / trainings.length * 100).toFixed(1);
-            }
-            let lastPred = "Ninguna";
-            // Podríamos obtener la última predicción del endpoint correspondiente
-            document.getElementById('stats-cards').innerHTML = `
-                <div class="col-xl-3 col-md-6">
-                    <div class="card border-start border-primary border-4 shadow-sm">
-                        <div class="card-body d-flex justify-content-between">
-                            <div><h5 class="text-muted">Datasets</h5><h2>${totalDatasets}</h2></div>
-                            <i class="bi bi-files text-primary display-5"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-md-6">
-                    <div class="card border-start border-success border-4 shadow-sm">
-                        <div class="card-body d-flex justify-content-between">
-                            <div><h5 class="text-muted">Modelos</h5><h2>${totalTrainings}</h2></div>
-                            <i class="bi bi-cpu text-success display-5"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-md-6">
-                    <div class="card border-start border-info border-4 shadow-sm">
-                        <div class="card-body d-flex justify-content-between">
-                            <div><h5 class="text-muted">Precisión Promedio</h5><h2>${avgAcc}%</h2></div>
-                            <i class="bi bi-graph-up text-info display-5"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-md-6">
-                    <div class="card border-start border-warning border-4 shadow-sm">
-                        <div class="card-body d-flex justify-content-between">
-                            <div><h5 class="text-muted">Última Predicción</h5><h5>${lastPred}</h5></div>
-                            <i class="bi bi-magic text-warning display-5"></i>
-                        </div>
-                    </div>
-                </div>`;
-        });
-    </script>
+  </div>
+</nav>
+
+<!-- ── HERO ────────────────────────────────────────────────────────────────── -->
+<section class="hero-section" id="inicio">
+  <div class="hero-bg-anim">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-orb hero-orb-3"></div>
+    <div class="hero-grid"></div>
+  </div>
+  <div class="container py-5">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6 hero-content">
+        <div class="hero-badge"><i class="bi bi-stars"></i> IA &amp; Machine Learning 2026</div>
+        <h1 class="hero-title">
+          Clasificación <br/><span class="gradient-text">Inteligente</span> con<br/>Regresión Logística
+        </h1>
+        <p class="hero-subtitle">
+          Plataforma académica para entrenar, evaluar y desplegar modelos de Machine Learning orientados a problemas de clasificación. Visualiza, analiza y predice con precisión.
+        </p>
+        <div class="d-flex gap-3 flex-wrap">
+          <a href="dashboard.html" class="btn-hero-primary">
+            <i class="bi bi-rocket-takeoff"></i> Comenzar Proyecto
+          </a>
+          <a href="#teoria" class="btn-hero-secondary">
+            <i class="bi bi-book-open"></i> Ver Documentación
+          </a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat"><strong>2</strong><span>Datasets incluidos</span></div>
+          <div class="hero-stat"><strong>6+</strong><span>Métricas de evaluación</span></div>
+          <div class="hero-stat"><strong>100%</strong><span>Open Source</span></div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="hero-chart-card">
+          <p class="hero-chart-label"><i class="bi bi-graph-up"></i> Curva Sigmoide — Regresión Logística</p>
+          <canvas id="heroSigmoid" height="220"></canvas>
+          <div class="row mt-3 g-2">
+            <div class="col-4">
+              <div style="background:rgba(26,115,232,.15);border-radius:10px;padding:.8rem;text-align:center">
+                <div style="font-size:1.4rem;font-weight:800;color:#4fa3ff">σ(z)</div>
+                <div style="font-size:.72rem;color:rgba(255,255,255,.5);text-transform:uppercase">Función</div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div style="background:rgba(0,212,255,.1);border-radius:10px;padding:.8rem;text-align:center">
+                <div style="font-size:1.4rem;font-weight:800;color:#00d4ff">0→1</div>
+                <div style="font-size:.72rem;color:rgba(255,255,255,.5);text-transform:uppercase">Salida</div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div style="background:rgba(139,92,246,.15);border-radius:10px;padding:.8rem;text-align:center">
+                <div style="font-size:1.4rem;font-weight:800;color:#8b5cf6">0.5</div>
+                <div style="font-size:.72rem;color:rgba(255,255,255,.5);text-transform:uppercase">Umbral</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECCIÓN 1: REGRESIÓN LINEAL ─────────────────────────────────────────── -->
+<section class="section section-alt" id="teoria">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6 reveal">
+        <div class="section-label"><i class="bi bi-graph-up-arrow"></i> Fundamentos</div>
+        <h2 class="section-title">¿Qué es la <span class="gradient-text">Regresión Lineal</span>?</h2>
+        <p class="section-subtitle mb-4">
+          La regresión lineal es un modelo estadístico que busca predecir un valor continuo a partir de una o más variables de entrada, asumiendo una relación lineal entre ellas.
+        </p>
+        <div class="d-flex flex-column gap-3">
+          <div class="card-modern p-3">
+            <div class="d-flex gap-3 align-items-start">
+              <div class="card-icon card-icon-blue" style="width:44px;height:44px;min-width:44px;font-size:1.2rem">📈</div>
+              <div>
+                <h4>Predicción Continua</h4>
+                <p style="font-size:.9rem;margin:0">Modela relaciones entre variables de entrada y una salida numérica. Ejemplo: predecir el precio de una casa.</p>
+              </div>
+            </div>
+          </div>
+          <div class="card-modern p-3">
+            <div class="d-flex gap-3 align-items-start">
+              <div class="card-icon card-icon-cyan" style="width:44px;height:44px;min-width:44px;font-size:1.2rem">🔀</div>
+              <div>
+                <h4>Diferencia con Clasificación</h4>
+                <p style="font-size:.9rem;margin:0">Mientras la regresión predice valores continuos, la clasificación asigna etiquetas discretas como "Sí/No" o categorías.</p>
+              </div>
+            </div>
+          </div>
+          <div class="card-modern p-3">
+            <div class="d-flex gap-3 align-items-start">
+              <div class="card-icon card-icon-purple" style="width:44px;height:44px;min-width:44px;font-size:1.2rem">🔗</div>
+              <div>
+                <h4>Relación con Regresión Logística</h4>
+                <p style="font-size:.9rem;margin:0">La regresión logística toma la salida lineal y la transforma con la función sigmoide para producir probabilidades entre 0 y 1.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 reveal">
+        <div class="formula-box">
+          ŷ = β₀ + β₁x₁ + β₂x₂ + ... + βₙxₙ
+        </div>
+        <div class="sigmoid-wrap mt-3">
+          <p style="font-size:.8rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.8rem">
+            <i class="bi bi-graph-up"></i> Ajuste de recta de regresión lineal
+          </p>
+          <canvas id="linearChart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECCIÓN 2: REGRESIÓN LOGÍSTICA ─────────────────────────────────────── -->
+<section class="section" id="logistica">
+  <div class="container">
+    <div class="text-center mb-5 reveal">
+      <div class="section-label mx-auto"><i class="bi bi-lightning-charge"></i> El Clasificador</div>
+      <h2 class="section-title">Regresión Logística como <span class="gradient-text">Clasificador</span></h2>
+      <p class="section-subtitle mx-auto text-center">Transforma probabilidades en decisiones de clasificación usando la función sigmoide.</p>
+    </div>
+    <div class="row g-4 mb-5">
+      <div class="col-md-4 reveal">
+        <div class="card-modern h-100 text-center">
+          <div class="card-icon card-icon-blue mx-auto">🎯</div>
+          <h4>Clasificación Supervisada</h4>
+          <p>Aprende de ejemplos etiquetados para predecir la categoría de nuevos datos desconocidos.</p>
+        </div>
+      </div>
+      <div class="col-md-4 reveal">
+        <div class="card-modern h-100 text-center">
+          <div class="card-icon card-icon-cyan mx-auto">〰️</div>
+          <h4>Función Sigmoide</h4>
+          <p>Comprime cualquier valor real al rango [0, 1], interpretable como probabilidad de pertenencia a una clase.</p>
+        </div>
+      </div>
+      <div class="col-md-4 reveal">
+        <div class="card-modern h-100 text-center">
+          <div class="card-icon card-icon-green mx-auto">⚖️</div>
+          <h4>Clasificación Binaria</h4>
+          <p>Si P(y=1|x) &gt; 0.5, el modelo clasifica como positivo. De lo contrario, negativo.</p>
+        </div>
+      </div>
+    </div>
+    <div class="row align-items-center g-5">
+      <div class="col-lg-5 reveal">
+        <div class="formula-box mb-3">σ(z) = 1 / (1 + e<sup style="font-size:.7em">−z</sup>)</div>
+        <div class="formula-box" style="font-size:.95rem">z = β₀ + β₁x₁ + ... + βₙxₙ</div>
+        <div class="mt-4">
+          <h4 class="mb-3">Casos de uso reales</h4>
+          <div class="d-flex flex-column gap-2">
+            <div class="d-flex align-items-center gap-2 badge-custom badge-blue" style="border-radius:var(--radius-sm)">
+              <i class="bi bi-heart-pulse"></i> Diagnóstico médico (cáncer / no cáncer)
+            </div>
+            <div class="d-flex align-items-center gap-2 badge-custom badge-green" style="border-radius:var(--radius-sm)">
+              <i class="bi bi-mortarboard"></i> Predicción de deserción estudiantil
+            </div>
+            <div class="d-flex align-items-center gap-2 badge-custom badge-purple" style="border-radius:var(--radius-sm)">
+              <i class="bi bi-shield-check"></i> Detección de fraude financiero
+            </div>
+            <div class="d-flex align-items-center gap-2 badge-custom badge-orange" style="border-radius:var(--radius-sm)">
+              <i class="bi bi-envelope-check"></i> Filtro de spam en correos
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-7 reveal">
+        <div class="sigmoid-wrap">
+          <p style="font-size:.8rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.8rem">
+            <i class="bi bi-activity"></i> Curva Sigmoide interactiva
+          </p>
+          <canvas id="sigmoidChart" height="240"></canvas>
+          <div class="mt-2 text-center" style="font-size:.78rem;color:var(--text-muted)">
+            Zona azul = Clase 1 (P &gt; 0.5) &nbsp;|&nbsp; Zona gris = Clase 0 (P &lt; 0.5)
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECCIÓN 3: ENTRENAMIENTO ────────────────────────────────────────────── -->
+<section class="section section-alt" id="entrenamiento">
+  <div class="container">
+    <div class="text-center mb-5 reveal">
+      <div class="section-label mx-auto"><i class="bi bi-cpu"></i> Pipeline</div>
+      <h2 class="section-title">Entrenamiento del <span class="gradient-text">Modelo</span></h2>
+      <p class="section-subtitle mx-auto">Desde los datos crudos hasta las predicciones en producción.</p>
+    </div>
+    <div class="row g-4 mb-5 reveal">
+      <div class="col-md-3">
+        <div class="card-modern h-100 text-center">
+          <div class="card-icon card-icon-blue mx-auto">📊</div>
+          <h4>1. Recolección</h4>
+          <p style="font-size:.88rem">Carga datasets desde archivos CSV o selecciona uno de los datasets de ejemplo integrados.</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card-modern h-100 text-center">
+          <div class="card-icon card-icon-orange mx-auto">🧹</div>
+          <h4>2. Limpieza</h4>
+          <p style="font-size:.88rem">Detección de valores nulos, codificación de variables categóricas y normalización con StandardScaler.</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card-modern h-100 text-center">
+          <div class="card-icon card-icon-cyan mx-auto">✂️</div>
+          <h4>3. División Train/Test</h4>
+          <p style="font-size:.88rem">Separación configurable del dataset. Por defecto: <strong>70%</strong> entrenamiento / <strong>30%</strong> prueba.</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card-modern h-100 text-center">
+          <div class="card-icon card-icon-green mx-auto">🚀</div>
+          <h4>4. Entrenamiento</h4>
+          <p style="font-size:.88rem">Scikit-Learn ajusta los coeficientes del modelo minimizando la función de pérdida logística.</p>
+        </div>
+      </div>
+    </div>
+    <!-- Flow diagram -->
+    <div class="reveal">
+      <h4 class="text-center mb-4" style="color:var(--text-muted);font-size:.9rem;text-transform:uppercase;letter-spacing:.1em">Flujo de datos</h4>
+      <div class="flow-container">
+        <div class="flow-step">
+          <div class="flow-step-icon">📂</div>
+          <div class="flow-step-title">Datos</div>
+          <div class="flow-step-sub">CSV / Built-in</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-icon">⚙️</div>
+          <div class="flow-step-title">Preproceso</div>
+          <div class="flow-step-sub">Scale + Encode</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-icon">🧠</div>
+          <div class="flow-step-title">Modelo</div>
+          <div class="flow-step-sub">LogReg Pipeline</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-icon">🎓</div>
+          <div class="flow-step-title">Entrenamiento</div>
+          <div class="flow-step-sub">fit(X_train)</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-icon">🎯</div>
+          <div class="flow-step-title">Predicciones</div>
+          <div class="flow-step-sub">predict(X)</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-icon">💾</div>
+          <div class="flow-step-title">Guardado</div>
+          <div class="flow-step-sub">.joblib</div>
+        </div>
+      </div>
+    </div>
+    <!-- Split visualization -->
+    <div class="row justify-content-center mt-5 reveal">
+      <div class="col-lg-8">
+        <div class="card-modern text-center">
+          <h4 class="mb-3">División Train / Test</h4>
+          <div class="split-visual mb-2" style="height:20px;border-radius:10px">
+            <div class="split-train" style="width:70%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.8rem;font-weight:700">70% Train</div>
+            <div class="split-test"  style="flex:1;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.8rem;font-weight:700">30% Test</div>
+          </div>
+          <div class="d-flex justify-content-center gap-4 mt-3">
+            <div><span style="display:inline-block;width:12px;height:12px;background:var(--gradient-card);border-radius:3px;margin-right:.4rem"></span><small>Entrenamiento (aprendizaje)</small></div>
+            <div><span style="display:inline-block;width:12px;height:12px;background:rgba(239,68,68,.7);border-radius:3px;margin-right:.4rem"></span><small>Prueba (evaluación)</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECCIÓN 4: MÉTRICAS ─────────────────────────────────────────────────── -->
+<section class="section" id="metricas">
+  <div class="container">
+    <div class="text-center mb-5 reveal">
+      <div class="section-label mx-auto"><i class="bi bi-bar-chart-line"></i> Evaluación</div>
+      <h2 class="section-title">Evaluación del <span class="gradient-text">Desempeño</span></h2>
+      <p class="section-subtitle mx-auto">Métricas clave para entender qué tan bien clasifica tu modelo.</p>
+    </div>
+    <div class="row g-4 mb-5">
+      <div class="col-md-3 reveal">
+        <div class="metric-card">
+          <div class="card-icon card-icon-blue mx-auto mb-2">🎯</div>
+          <div class="metric-label">Accuracy</div>
+          <div class="metric-value" style="color:var(--blue-tech)">95%</div>
+          <p style="font-size:.82rem;margin:0">Porcentaje total de predicciones correctas sobre todas las muestras.</p>
+        </div>
+      </div>
+      <div class="col-md-3 reveal">
+        <div class="metric-card">
+          <div class="card-icon card-icon-green mx-auto mb-2">✅</div>
+          <div class="metric-label">Precision</div>
+          <div class="metric-value" style="color:var(--success)">92%</div>
+          <p style="font-size:.82rem;margin:0">De todas las predicciones positivas, ¿cuántas fueron realmente positivas?</p>
+        </div>
+      </div>
+      <div class="col-md-3 reveal">
+        <div class="metric-card">
+          <div class="card-icon card-icon-orange mx-auto mb-2">🔍</div>
+          <div class="metric-label">Recall</div>
+          <div class="metric-value" style="color:var(--warning)">89%</div>
+          <p style="font-size:.82rem;margin:0">De todos los casos positivos reales, ¿cuántos detectó el modelo?</p>
+        </div>
+      </div>
+      <div class="col-md-3 reveal">
+        <div class="metric-card">
+          <div class="card-icon card-icon-purple mx-auto mb-2">⚡</div>
+          <div class="metric-label">F1 Score</div>
+          <div class="metric-value" style="color:var(--purple)">90%</div>
+          <p style="font-size:.82rem;margin:0">Media armónica entre Precision y Recall. Balance entre ambas métricas.</p>
+        </div>
+      </div>
+    </div>
+    <div class="row g-4 reveal">
+      <div class="col-lg-6">
+        <div class="sigmoid-wrap">
+          <p style="font-size:.8rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.8rem">
+            <i class="bi bi-grid"></i> Ejemplo de Matriz de Confusión
+          </p>
+          <canvas id="confusionDemo" height="220"></canvas>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="sigmoid-wrap">
+          <p style="font-size:.8rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.8rem">
+            <i class="bi bi-graph-up"></i> Curva ROC (ejemplo)
+          </p>
+          <canvas id="rocDemo" height="220"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECCIÓN 5: APLICACIONES ─────────────────────────────────────────────── -->
+<section class="section section-alt" id="aplicaciones">
+  <div class="container">
+    <div class="text-center mb-5 reveal">
+      <div class="section-label mx-auto"><i class="bi bi-globe"></i> Casos de Uso</div>
+      <h2 class="section-title">Aplicación sobre <span class="gradient-text">Nuevos Datos</span></h2>
+      <p class="section-subtitle mx-auto">Un modelo entrenado puede clasificar registros nunca vistos en tiempo real.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-3 reveal">
+        <div class="app-card h-100">
+          <div class="app-card-emoji">🏥</div>
+          <div class="app-card-title">Diagnóstico Médico</div>
+          <div class="app-card-desc">Clasificación de tumores como benignos o malignos a partir de características celulares (Breast Cancer Dataset).</div>
+        </div>
+      </div>
+      <div class="col-md-3 reveal">
+        <div class="app-card h-100">
+          <div class="app-card-emoji">🎓</div>
+          <div class="app-card-title">Predicción Educativa</div>
+          <div class="app-card-desc">Identificar estudiantes en riesgo de deserción basado en notas, asistencia y factores socioeconómicos.</div>
+        </div>
+      </div>
+      <div class="col-md-3 reveal">
+        <div class="app-card h-100">
+          <div class="app-card-emoji">💳</div>
+          <div class="app-card-title">Riesgo Financiero</div>
+          <div class="app-card-desc">Evaluar la probabilidad de incumplimiento de pago de un crédito según el perfil del solicitante.</div>
+        </div>
+      </div>
+      <div class="col-md-3 reveal">
+        <div class="app-card h-100">
+          <div class="app-card-emoji">🕵️</div>
+          <div class="app-card-title">Detección de Fraude</div>
+          <div class="app-card-desc">Identificar transacciones sospechosas en tiempo real analizando patrones de comportamiento.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECCIÓN 6: ÉTICA ────────────────────────────────────────────────────── -->
+<section class="section" id="etica">
+  <div class="container">
+    <div class="text-center mb-5 reveal">
+      <div class="section-label mx-auto"><i class="bi bi-shield-check"></i> Responsabilidad</div>
+      <h2 class="section-title">Uso <span class="gradient-text">Responsable</span> de la IA</h2>
+      <p class="section-subtitle mx-auto">La tecnología poderosa requiere responsabilidad. Estos principios guían nuestro desarrollo.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4 col-lg-2 reveal">
+        <div class="card-modern text-center h-100">
+          <div class="card-icon card-icon-blue mx-auto">🔍</div>
+          <h4 style="font-size:1rem">Verificación</h4>
+          <p style="font-size:.82rem">Valida los resultados del modelo con expertos del dominio antes de tomar decisiones críticas.</p>
+        </div>
+      </div>
+      <div class="col-md-4 col-lg-2 reveal">
+        <div class="card-modern text-center h-100">
+          <div class="card-icon card-icon-green mx-auto">👤</div>
+          <h4 style="font-size:1rem">Supervisión Humana</h4>
+          <p style="font-size:.82rem">El modelo asiste, no reemplaza. Mantén siempre la supervisión humana en decisiones de alto impacto.</p>
+        </div>
+      </div>
+      <div class="col-md-4 col-lg-2 reveal">
+        <div class="card-modern text-center h-100">
+          <div class="card-icon card-icon-orange mx-auto">🔒</div>
+          <h4 style="font-size:1rem">Protección de Datos</h4>
+          <p style="font-size:.82rem">Los datos personales deben anonimizarse. Cumple con regulaciones como GDPR y Habeas Data.</p>
+        </div>
+      </div>
+      <div class="col-md-4 col-lg-2 reveal">
+        <div class="card-modern text-center h-100">
+          <div class="card-icon card-icon-cyan mx-auto">🪟</div>
+          <h4 style="font-size:1rem">Transparencia</h4>
+          <p style="font-size:.82rem">Los modelos deben ser interpretables. Muestra coeficientes y explica cómo se tomó cada decisión.</p>
+        </div>
+      </div>
+      <div class="col-md-4 col-lg-2 reveal">
+        <div class="card-modern text-center h-100">
+          <div class="card-icon card-icon-purple mx-auto">⚖️</div>
+          <h4 style="font-size:1rem">Equidad</h4>
+          <p style="font-size:.82rem">Evalúa sesgos en los datos de entrenamiento. Los modelos pueden perpetuar desigualdades existentes.</p>
+        </div>
+      </div>
+      <div class="col-md-4 col-lg-2 reveal">
+        <div class="card-modern text-center h-100">
+          <div class="card-icon card-icon-red mx-auto">🌍</div>
+          <h4 style="font-size:1rem">Ética en IA</h4>
+          <p style="font-size:.82rem">Desarrolla IA que beneficie a la humanidad. Considera el impacto social, económico y ambiental.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECCIÓN 7: DESPLIEGUE ───────────────────────────────────────────────── -->
+<section class="section section-alt" id="despliegue">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6 reveal">
+        <div class="section-label"><i class="bi bi-cloud-upload"></i> Producción</div>
+        <h2 class="section-title">Despliegue en la <span class="gradient-text">Nube</span></h2>
+        <p class="section-subtitle mb-4">Lleva tu modelo de Machine Learning de tu laptop al mundo. Disponibilidad 24/7, escalabilidad automática.</p>
+        <div class="row g-3 mb-4">
+          <div class="col-6">
+            <div class="card-modern p-3">
+              <div class="card-icon card-icon-blue mb-2" style="width:40px;height:40px;font-size:1.1rem">🟣</div>
+              <h5 style="font-size:.95rem">Render</h5>
+              <p style="font-size:.8rem;margin:0">Backend Flask con gunicorn. Despliegue automático desde GitHub. SSL incluido.</p>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="card-modern p-3">
+              <div class="card-icon card-icon-cyan mb-2" style="width:40px;height:40px;font-size:1.1rem">▲</div>
+              <h5 style="font-size:.95rem">Vercel</h5>
+              <p style="font-size:.8rem;margin:0">Frontend estático con CDN global. Despliegue en segundos. 0 configuración.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 reveal">
+        <div class="card-modern">
+          <h5 class="text-center mb-4" style="color:var(--text-muted);font-size:.85rem;text-transform:uppercase;letter-spacing:.1em">Arquitectura de Despliegue</h5>
+          <div class="arch-diagram">
+            <div class="arch-box arch-box-primary">👤 Usuario</div>
+            <div class="arch-connector"></div>
+            <div class="arch-box arch-box-secondary">▲ Frontend (Vercel) <br/><small style="font-weight:400;font-size:.78rem">HTML / CSS / JS estático</small></div>
+            <div class="arch-connector"></div>
+            <div class="arch-box arch-box-secondary">🟣 API Flask (Render) <br/><small style="font-weight:400;font-size:.78rem">REST API + gunicorn</small></div>
+            <div class="arch-connector"></div>
+            <div class="arch-box arch-box-secondary">🧠 Modelo ML <br/><small style="font-weight:400;font-size:.78rem">scikit-learn + joblib</small></div>
+            <div class="arch-connector"></div>
+            <div class="arch-box" style="border-color:var(--success);color:var(--success)">🗄️ SQLite Database</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA FINAL ───────────────────────────────────────────────────────────── -->
+<section style="background:var(--gradient-hero);padding:5rem 0;position:relative;overflow:hidden">
+  <div class="hero-bg-anim">
+    <div class="hero-orb hero-orb-1" style="opacity:.25"></div>
+    <div class="hero-orb hero-orb-2" style="opacity:.2"></div>
+  </div>
+  <div class="container text-center" style="position:relative;z-index:2">
+    <div class="reveal">
+      <h2 style="color:#fff;font-size:2.5rem;font-weight:900;margin-bottom:1rem">¿Listo para comenzar?</h2>
+      <p style="color:rgba(255,255,255,.75);font-size:1.1rem;max-width:500px;margin:0 auto 2rem">Carga tu dataset, entrena tu primer modelo y realiza predicciones en minutos.</p>
+      <div class="d-flex gap-3 justify-content-center flex-wrap">
+        <a href="dashboard.html" class="btn-hero-primary"><i class="bi bi-rocket-takeoff"></i> Ir al Dashboard</a>
+        <a href="train.html"     class="btn-hero-secondary"><i class="bi bi-cpu"></i> Entrenar Modelo</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ──────────────────────────────────────────────────────────────── -->
+<footer class="footer">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="footer-brand">🧠 LogRegAI</div>
+        <p class="footer-desc">Plataforma académica de Machine Learning para el curso de Inteligencia Artificial 2026.</p>
+      </div>
+      <div class="col-lg-2">
+        <p style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-bottom:.8rem">Páginas</p>
+        <a class="footer-link" href="index.html">Inicio</a>
+        <a class="footer-link" href="dashboard.html">Dashboard</a>
+        <a class="footer-link" href="train.html">Entrenar</a>
+        <a class="footer-link" href="evaluate.html">Evaluar</a>
+        <a class="footer-link" href="predict.html">Predecir</a>
+      </div>
+      <div class="col-lg-3">
+        <p style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-bottom:.8rem">Tecnologías</p>
+        <a class="footer-link" href="#">Python + Flask</a>
+        <a class="footer-link" href="#">Scikit-Learn</a>
+        <a class="footer-link" href="#">Bootstrap 5</a>
+        <a class="footer-link" href="#">Chart.js</a>
+        <a class="footer-link" href="#">SQLite</a>
+      </div>
+      <div class="col-lg-3">
+        <p style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-bottom:.8rem">Despliegue</p>
+        <a class="footer-link" href="#">Render (Backend)</a>
+        <a class="footer-link" href="#">Vercel (Frontend)</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2026 LogRegAI — Proyecto Final IA &amp; ML &nbsp;|&nbsp; Construido con 🧠 y ☕
+    </div>
+  </div>
+</footer>
+
+<!-- ── SCRIPTS ─────────────────────────────────────────────────────────────── -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="js/main.js"></script>
+<script>
+// ── Hero Sigmoid ──────────────────────────────────────────────────────────────
+(function(){
+  const sigmoid = x => 1 / (1 + Math.exp(-x));
+  const xs = Array.from({length:120}, (_,i) => -6 + i*(12/119));
+  const ys = xs.map(sigmoid);
+
+  const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark';
+
+  function heroColor() { return isDark() ? 'rgba(255,255,255,.1)' : 'rgba(0,0,0,.06)'; }
+
+  const ctx = document.getElementById('heroSigmoid').getContext('2d');
+  const heroChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: xs.map(x => x.toFixed(1)),
+      datasets: [{
+        data: ys,
+        borderColor: '#00d4ff',
+        borderWidth: 3,
+        pointRadius: 0,
+        tension: 0.4,
+        fill: {target:'origin', above:'rgba(0,212,255,.08)'},
+      }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:true,
+      plugins:{legend:{display:false},tooltip:{
+        callbacks:{label: ctx => `σ(${parseFloat(xs[ctx.dataIndex]).toFixed(1)}) = ${ctx.raw.toFixed(3)}`}
+      }},
+      scales:{
+        x:{ticks:{color:'rgba(255,255,255,.45)',maxTicksLimit:7},grid:{color:'rgba(255,255,255,.07)'}},
+        y:{min:0,max:1,ticks:{color:'rgba(255,255,255,.45)'},grid:{color:'rgba(255,255,255,.07)'}}
+      },
+      animation:{duration:1500,easing:'easeInOutQuart'}
+    }
+  });
+
+  // ── Linear Regression demo chart ─────────────────────────────────────────
+  const lrCtx = document.getElementById('linearChart').getContext('2d');
+  const scatter = Array.from({length:30},(_,i)=>({x: i*0.3, y: 0.8*i*0.3 + (Math.random()-.5)*1.2 + 1}));
+  const lineX = [0, 9];
+  const lineY = [1, 0.8*9+1];
+  new Chart(lrCtx, {
+    type:'scatter',
+    data:{
+      datasets:[
+        {label:'Datos',data:scatter,backgroundColor:'rgba(26,115,232,.6)',pointRadius:5},
+        {label:'Recta ajustada',data:[{x:lineX[0],y:lineY[0]},{x:lineX[1],y:lineY[1]}],
+         type:'line',borderColor:'#00d4ff',borderWidth:2.5,pointRadius:0,tension:0}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:true,
+      plugins:{legend:{labels:{color:'rgba(255,255,255,.6)',font:{size:11}}}},
+      scales:{
+        x:{ticks:{color:'rgba(255,255,255,.4)'},grid:{color:'rgba(255,255,255,.06)'}},
+        y:{ticks:{color:'rgba(255,255,255,.4)'},grid:{color:'rgba(255,255,255,.06)'}}
+      }
+    }
+  });
+
+  // ── Big Sigmoid chart ─────────────────────────────────────────────────────
+  const sigCtx = document.getElementById('sigmoidChart').getContext('2d');
+  new Chart(sigCtx, {
+    type:'line',
+    data:{
+      labels: xs.map(x=>x.toFixed(1)),
+      datasets:[
+        {label:'σ(z)',data:ys,borderColor:'#1a73e8',borderWidth:3,pointRadius:0,tension:.4,
+         fill:{target:'origin',above:'rgba(26,115,232,.12)',below:'rgba(100,116,139,.08)'}},
+        {label:'Umbral 0.5',data:xs.map(()=>0.5),borderColor:'rgba(239,68,68,.6)',borderWidth:1.5,
+         borderDash:[6,4],pointRadius:0}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:true,
+      plugins:{legend:{labels:{color:'var(--text-secondary)',font:{size:11}}}},
+      scales:{
+        x:{ticks:{color:'var(--text-muted)',maxTicksLimit:7},grid:{color:'var(--border)'},title:{display:true,text:'z (combinación lineal)',color:'var(--text-muted)'}},
+        y:{min:0,max:1,ticks:{color:'var(--text-muted)'},grid:{color:'var(--border)'},title:{display:true,text:'Probabilidad P(y=1)',color:'var(--text-muted)'}}
+      }
+    }
+  });
+
+  // ── Demo Confusion Matrix (heatmap via bar) ───────────────────────────────
+  const cmCtx = document.getElementById('confusionDemo').getContext('2d');
+  new Chart(cmCtx, {
+    type:'bar',
+    data:{
+      labels:['Pred: Neg','Pred: Pos'],
+      datasets:[
+        {label:'Real: Negativo',data:[48,5],backgroundColor:['rgba(16,185,129,.75)','rgba(239,68,68,.6)']},
+        {label:'Real: Positivo',data:[3,44],backgroundColor:['rgba(245,158,11,.6)','rgba(26,115,232,.75)']}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:true,
+      plugins:{legend:{labels:{color:'var(--text-secondary)',font:{size:11}}}},
+      scales:{
+        x:{stacked:false,ticks:{color:'var(--text-muted)'},grid:{color:'var(--border)'}},
+        y:{stacked:false,ticks:{color:'var(--text-muted)'},grid:{color:'var(--border)'}}
+      }
+    }
+  });
+
+  // ── Demo ROC ──────────────────────────────────────────────────────────────
+  const rocCtx = document.getElementById('rocDemo').getContext('2d');
+  const fpr = [0,.05,.1,.15,.25,.4,.6,.8,1];
+  const tpr = [0,.45,.65,.78,.86,.91,.95,.98,1];
+  new Chart(rocCtx, {
+    type:'line',
+    data:{
+      labels:fpr.map(v=>v.toFixed(2)),
+      datasets:[
+        {label:`AUC ≈ 0.93`,data:tpr,borderColor:'#1a73e8',borderWidth:2.5,tension:.3,pointRadius:3,
+         pointBackgroundColor:'#1a73e8',fill:{target:'origin',above:'rgba(26,115,232,.1)'}},
+        {label:'Aleatório',data:fpr,borderColor:'rgba(239,68,68,.5)',borderWidth:1.5,borderDash:[5,5],pointRadius:0}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:true,
+      plugins:{legend:{labels:{color:'var(--text-secondary)',font:{size:11}}}},
+      scales:{
+        x:{min:0,max:1,title:{display:true,text:'FPR (1 - Specificity)',color:'var(--text-muted)'},ticks:{color:'var(--text-muted)'},grid:{color:'var(--border)'}},
+        y:{min:0,max:1,title:{display:true,text:'TPR (Recall)',color:'var(--text-muted)'},ticks:{color:'var(--text-muted)'},grid:{color:'var(--border)'}}
+      }
+    }
+  });
+})();
+</script>
 </body>
 </html>

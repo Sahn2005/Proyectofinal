@@ -1,184 +1,169 @@
 <!DOCTYPE html>
-<html lang="es" data-bs-theme="light">
+<html lang="es" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Predicción - Clasificador IA</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Predecir — LogReg AI</title>
+  <meta name="description" content="Módulo de predicción en tiempo real con formulario dinámico y visualización de probabilidades por clase." />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-    <div id="sidebar-placeholder"></div>
 
-    <div class="container-fluid px-4 py-4" id="app">
-        <h2>Realizar Predicción</h2>
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+  <div class="container">
+    <a class="navbar-brand" href="index.html"><div class="brand-icon">🧠</div>LogReg<span class="brand-dot">AI</span></a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+      <span style="color:#fff;font-size:1.4rem"><i class="bi bi-list"></i></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav ms-auto align-items-center gap-1">
+        <li class="nav-item"><a class="nav-link-custom" href="index.html">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link-custom" href="dashboard.html">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link-custom" href="train.html">Entrenar</a></li>
+        <li class="nav-item"><a class="nav-link-custom" href="evaluate.html">Evaluar</a></li>
+        <li class="nav-item"><a class="nav-link-custom active" href="predict.html">Predecir</a></li>
+        <li class="nav-item ms-2"><button class="theme-toggle" title="Cambiar tema">🌙</button></li>
+      </ul>
+    </div>
+  </div>
+</nav>
 
-        <!-- Seleccionar modelo -->
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-                <label class="form-label">Modelo entrenado</label>
-                <select id="modelSelect" class="form-select">
-                    <option value="">Cargando modelos...</option>
-                </select>
-            </div>
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="container page-header-content">
+    <h1 class="page-title"><i class="bi bi-magic"></i> Predicción en Tiempo Real</h1>
+    <p class="page-breadcrumb"><a href="index.html">Inicio</a> / <a href="dashboard.html">Dashboard</a> / Predecir</p>
+  </div>
+</div>
+
+<div class="container py-4">
+  <div class="row g-4">
+
+    <!-- SIDEBAR -->
+    <div class="col-lg-3">
+      <div class="sidebar">
+        <p class="sidebar-title">Navegación</p>
+        <a href="dashboard.html" class="sidebar-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="train.html"     class="sidebar-link"><i class="bi bi-cpu"></i> Entrenar Modelo</a>
+        <a href="evaluate.html"  class="sidebar-link"><i class="bi bi-bar-chart-line"></i> Evaluar Modelo</a>
+        <a href="predict.html"   class="sidebar-link active"><i class="bi bi-magic"></i> Predecir</a>
+        <hr style="border-color:var(--border);margin:1rem 0">
+        <p class="sidebar-title">Historial</p>
+        <div id="predHistory" style="font-size:.82rem;color:var(--text-muted)">
+          <p>Aún sin predicciones en esta sesión.</p>
         </div>
-
-        <!-- Pestañas: manual / CSV -->
-        <ul class="nav nav-tabs" id="predictionTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#manualTab">Predicción Manual</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#csvTab">Predicción por CSV</button>
-            </li>
-        </ul>
-
-        <div class="tab-content mt-3">
-            <!-- Manual -->
-            <div class="tab-pane fade show active" id="manualTab">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <form id="manualForm">
-                            <div id="featureInputs">Selecciona un modelo para ver las variables.</div>
-                            <button type="submit" class="btn btn-primary mt-3 d-none" id="predictBtn">Predecir</button>
-                        </form>
-                        <div id="manualResult" class="mt-3"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CSV -->
-            <div class="tab-pane fade" id="csvTab">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <form id="csvForm" enctype="multipart/form-data">
-                            <div class="mb-3">
-                                <label class="form-label">Archivo CSV con datos a predecir</label>
-                                <input type="file" class="form-control" name="file" accept=".csv" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary"><i class="bi bi-file-earmark-arrow-down"></i> Predecir y Descargar</button>
-                        </form>
-                        <div id="csvResult" class="mt-3"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <script src="js/api.js"></script>
-    <script src="js/main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        fetch('sidebar.html').then(r => r.text()).then(html => document.getElementById('sidebar-placeholder').innerHTML = html);
+    <!-- MAIN -->
+    <div class="col-lg-9">
 
-        const modelSelect = document.getElementById('modelSelect');
-        const featureInputs = document.getElementById('featureInputs');
-        const predictBtn = document.getElementById('predictBtn');
-        const manualForm = document.getElementById('manualForm');
-        const manualResult = document.getElementById('manualResult');
-        const csvForm = document.getElementById('csvForm');
-        const csvResult = document.getElementById('csvResult');
+      <!-- Model selector -->
+      <div class="form-section mb-4">
+        <div class="form-section-title"><i class="bi bi-archive"></i> Seleccionar Modelo</div>
+        <div class="row g-3 align-items-end">
+          <div class="col-md-8">
+            <label class="form-label-custom">Modelo entrenado</label>
+            <select class="form-control-custom" id="modelSelect" onchange="onModelChange()">
+              <option value="">-- Cargando modelos... --</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <button class="btn-outline-custom w-100" onclick="loadModelFeatures()" id="btnLoadFeats" disabled>
+              <i class="bi bi-arrow-clockwise"></i> Cargar Formulario
+            </button>
+          </div>
+        </div>
+        <div id="modelInfoBadges" class="mt-3" style="display:none">
+          <div class="d-flex gap-2 flex-wrap" id="modelBadges"></div>
+        </div>
+      </div>
 
-        // Cargar modelos entrenados
-        async function loadModels() {
-            const trainings = await api.getTrainings();
-            modelSelect.innerHTML = '<option value="">Selecciona modelo</option>' +
-                trainings.map(t => `<option value="${t.id}">ID: ${t.id} - ${t.target_column} (Acc: ${(t.accuracy*100).toFixed(1)}%)</option>`).join('');
-        }
+      <!-- Dynamic prediction form -->
+      <div class="form-section mb-4" id="predFormSection" style="display:none">
+        <div class="form-section-title">
+          <i class="bi bi-input-cursor-text"></i> Ingresar Valores
+          <span class="badge-custom badge-blue ms-2" id="formModelName">—</span>
+        </div>
+        <div class="row g-3" id="predInputGrid"></div>
+        <div class="mt-4 d-flex gap-3 flex-wrap">
+          <button class="btn-primary-custom flex-grow-1" onclick="makePrediction()" style="padding:.9rem;font-size:1rem">
+            <i class="bi bi-lightning-fill"></i> Predecir Ahora
+          </button>
+          <button class="btn-outline-custom" onclick="fillRandom()">
+            <i class="bi bi-shuffle"></i> Valores Aleatorios
+          </button>
+          <button class="btn-outline-custom" onclick="clearForm()">
+            <i class="bi bi-eraser"></i> Limpiar
+          </button>
+        </div>
+      </div>
 
-        // Cuando cambia el modelo, cargar sus características (obtenidas de un endpoint adicional)
-        // Como no tenemos endpoint directo para obtener feature_names, podemos almacenarlas en el training o 
-        // hacer una llamada adicional. Para simplificar, al seleccionar un modelo, podríamos pedir al usuario
-        // que ingrese manualmente, pero lo mejor es agregar un endpoint en el backend que devuelva feature_names.
-        // Aquí asumiremos que tenemos un endpoint /api/training/<id> que incluye 'feature_names' en el futuro.
-        // Por ahora, mostraremos un campo de texto para ingresar las variables manualmente si no podemos obtenerlas.
-
-        // Dado que el backend actual no expone feature_names, podemos añadir un endpoint simple:
-        // Pero mientras tanto, usaremos un enfoque: al seleccionar modelo, hacemos fetch a /api/training/<id> 
-        // y si existe feature_names las usamos, si no, pedimos al usuario que ingrese los nombres separados por coma.
-        // Voy a modificar el training_detail para devolver feature_names. (Lo añadiré después)
-        // Para que funcione ahora, pondré un campo de texto donde el usuario pueda escribir las features.
-        
-        modelSelect.addEventListener('change', async () => {
-            const id = modelSelect.value;
-            if (!id) {
-                featureInputs.innerHTML = 'Selecciona un modelo.';
-                predictBtn.classList.add('d-none');
-                return;
-            }
-            // Intentar obtener feature_names del endpoint de detalle
-            try {
-                const res = await fetch(`${api.API_BASE}/training/${id}`);
-                const data = await res.json();
-                if (data.feature_names && data.feature_names.length > 0) {
-                    generateInputs(data.feature_names);
-                } else {
-                    // Fallback: pedir features al usuario
-                    featureInputs.innerHTML = '<label class="form-label">Nombres de las variables (separados por coma)</label><input type="text" class="form-control" id="featuresInput" placeholder="ej: sepal_length,petal_width"><button type="button" class="btn btn-sm btn-outline-secondary mt-2" id="loadFeaturesBtn">Cargar campos</button>';
-                    document.getElementById('loadFeaturesBtn').addEventListener('click', () => {
-                        const features = document.getElementById('featuresInput').value.split(',').map(s => s.trim());
-                        generateInputs(features);
-                    });
-                }
-            } catch (err) {
-                featureInputs.innerHTML = 'Error al cargar modelo.';
-            }
-        });
-
-        function generateInputs(features) {
-            featureInputs.innerHTML = features.map(f => `
-                <div class="mb-3">
-                    <label class="form-label">${f}</label>
-                    <input type="text" class="form-control" name="${f}" required>
+      <!-- Result -->
+      <div id="predResultSection" style="display:none">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <div class="prediction-result">
+              <div class="prediction-label">Clase Predicha</div>
+              <div class="prediction-class" id="predClass">—</div>
+              <div style="font-size:.85rem;color:var(--text-muted)" id="predConfidence">Confianza: —</div>
+              <div class="mt-3 pt-3" style="border-top:1px solid var(--border)">
+                <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:.6rem">
+                  Detalles de entrada
                 </div>
-            `).join('');
-            predictBtn.classList.remove('d-none');
-        }
+                <div id="predInputSummary" style="font-size:.82rem;color:var(--text-secondary);text-align:left"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-7">
+            <div class="result-panel h-100">
+              <div class="result-panel-header">
+                <span class="result-panel-title"><i class="bi bi-pie-chart"></i> Probabilidades por Clase</span>
+              </div>
+              <div class="result-panel-body">
+                <canvas id="probChart" height="220"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        // Predicción manual
-        manualForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const trainingId = modelSelect.value;
-            const formData = new FormData(manualForm);
-            try {
-                const res = await api.predictManual(trainingId, formData);
-                if (res.error) {
-                    manualResult.innerHTML = `<div class="alert alert-danger">${res.error}</div>`;
-                    return;
-                }
-                manualResult.innerHTML = `
-                    <div class="alert alert-success">
-                        <strong>Predicción:</strong> ${res.prediction}<br>
-                        <strong>Probabilidad:</strong> ${res.probability}%<br>
-                        <small>${JSON.stringify(res.all_probabilities)}</small>
-                    </div>`;
-            } catch (err) {
-                manualResult.innerHTML = '<div class="alert alert-danger">Error de conexión</div>';
-            }
-        });
+        <!-- New prediction button -->
+        <div class="d-flex gap-3 mt-4 flex-wrap">
+          <button class="btn-primary-custom" onclick="resetPrediction()">
+            <i class="bi bi-plus-circle"></i> Nueva Predicción
+          </button>
+          <a href="evaluate.html" class="btn-outline-custom">
+            <i class="bi bi-bar-chart-line"></i> Ver Evaluación del Modelo
+          </a>
+        </div>
+      </div>
 
-        // Predicción CSV
-        csvForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const trainingId = modelSelect.value;
-            const formData = new FormData(csvForm);
-            csvResult.innerHTML = '<div class="alert alert-info">Procesando...</div>';
-            try {
-                const blob = await api.predictCsv(trainingId, formData);
-                // Descargar archivo
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'predictions.csv';
-                a.click();
-                csvResult.innerHTML = '<div class="alert alert-success">Descarga iniciada.</div>';
-            } catch (err) {
-                csvResult.innerHTML = '<div class="alert alert-danger">Error en la predicción.</div>';
-            }
-        });
+      <!-- Placeholder -->
+      <div id="predPlaceholder" class="text-center py-5" style="color:var(--text-muted)">
+        <i class="bi bi-magic" style="font-size:4rem;opacity:.4"></i>
+        <h4 class="mt-3" style="color:var(--text-muted)">Selecciona un modelo para comenzar</h4>
+        <p style="font-size:.9rem">El formulario de predicción se generará automáticamente según las features del modelo.</p>
+        <a href="train.html" class="btn-outline-custom mt-2" style="display:inline-flex">
+          <i class="bi bi-cpu"></i> Entrenar un modelo
+        </a>
+      </div>
 
-        loadModels();
-    </script>
+    </div>
+  </div>
+</div>
+
+<footer class="footer mt-5">
+  <div class="container">
+    <div class="footer-bottom">&copy; 2026 LogRegAI — Proyecto Final IA &amp; ML</div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="js/main.js"></script>
+<script src="js/predict.js"></script>
 </body>
 </html>

@@ -1,118 +1,237 @@
 <!DOCTYPE html>
-<html lang="es" data-bs-theme="light">
+<html lang="es" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entrenamiento - Clasificador IA</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entrenar Modelo — LogReg AI</title>
+  <meta name="description" content="Módulo de entrenamiento de modelos de regresión logística. Selecciona features, ajusta parámetros y entrena tu clasificador." />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-    <div id="sidebar-placeholder"></div>
 
-    <div class="container-fluid px-4 py-4" id="app">
-        <h2>Entrenar Modelo</h2>
-        <div class="row">
-            <div class="col-lg-6">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <form id="trainForm">
-                            <div class="mb-3">
-                                <label class="form-label">Dataset</label>
-                                <select class="form-select" id="datasetSelect" required>
-                                    <option value="">Cargando...</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Variable objetivo</label>
-                                <select class="form-select" id="targetSelect" disabled required>
-                                    <option value="">Primero elige dataset</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Porcentaje para prueba (%)</label>
-                                <input type="number" class="form-control" id="testSize" value="20" min="5" max="50" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary"><i class="bi bi-cpu"></i> Entrenar</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5>Resultado del entrenamiento</h5>
-                        <div id="trainingResult">Aquí aparecerán las métricas tras entrenar.</div>
-                    </div>
-                </div>
-            </div>
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+  <div class="container">
+    <a class="navbar-brand" href="index.html"><div class="brand-icon">🧠</div>LogReg<span class="brand-dot">AI</span></a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+      <span style="color:#fff;font-size:1.4rem"><i class="bi bi-list"></i></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav ms-auto align-items-center gap-1">
+        <li class="nav-item"><a class="nav-link-custom" href="index.html">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link-custom" href="dashboard.html">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link-custom active" href="train.html">Entrenar</a></li>
+        <li class="nav-item"><a class="nav-link-custom" href="evaluate.html">Evaluar</a></li>
+        <li class="nav-item"><a class="nav-link-custom" href="predict.html">Predecir</a></li>
+        <li class="nav-item ms-2"><button class="theme-toggle" title="Cambiar tema">🌙</button></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="container page-header-content">
+    <h1 class="page-title"><i class="bi bi-cpu"></i> Entrenar Modelo</h1>
+    <p class="page-breadcrumb"><a href="index.html">Inicio</a> / <a href="dashboard.html">Dashboard</a> / Entrenar</p>
+  </div>
+</div>
+
+<div class="container py-4">
+  <div class="row g-4">
+
+    <!-- SIDEBAR -->
+    <div class="col-lg-3">
+      <div class="sidebar">
+        <p class="sidebar-title">Navegación</p>
+        <a href="dashboard.html" class="sidebar-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="train.html"     class="sidebar-link active"><i class="bi bi-cpu"></i> Entrenar Modelo</a>
+        <a href="evaluate.html"  class="sidebar-link"><i class="bi bi-bar-chart-line"></i> Evaluar Modelo</a>
+        <a href="predict.html"   class="sidebar-link"><i class="bi bi-magic"></i> Predecir</a>
+        <hr style="border-color:var(--border);margin:1rem 0">
+        <p class="sidebar-title">Info</p>
+        <div style="font-size:.82rem;color:var(--text-muted);line-height:1.7">
+          <p>Pipeline:<br>StandardScaler → LogisticRegression</p>
+          <p>Solver: <code>lbfgs</code></p>
+          <p>Multi-class: <code>auto</code></p>
         </div>
+      </div>
     </div>
 
-    <script src="js/api.js"></script>
-    <script src="js/main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        fetch('sidebar.html').then(r => r.text()).then(html => document.getElementById('sidebar-placeholder').innerHTML = html);
+    <!-- MAIN -->
+    <div class="col-lg-9">
 
-        const datasetSelect = document.getElementById('datasetSelect');
-        const targetSelect = document.getElementById('targetSelect');
-        const testSize = document.getElementById('testSize');
-        const trainForm = document.getElementById('trainForm');
-        const trainingResult = document.getElementById('trainingResult');
+      <!-- Step 1: Dataset -->
+      <div class="form-section mb-4">
+        <div class="form-section-title">
+          <span class="badge-custom badge-blue" style="width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.85rem">1</span>
+          Seleccionar Dataset
+        </div>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label-custom">Dataset</label>
+            <select class="form-control-custom" id="dsSelect" onchange="onDatasetChange()">
+              <option value="">-- Seleccionar --</option>
+              <option value="iris">🌸 Iris Dataset</option>
+              <option value="breast_cancer">🔬 Breast Cancer</option>
+            </select>
+          </div>
+          <div class="col-md-6 d-flex align-items-end">
+            <button class="btn-outline-custom w-100" onclick="loadDatasetColumns()" id="btnLoadCols" disabled>
+              <i class="bi bi-arrow-clockwise"></i> Cargar Columnas
+            </button>
+          </div>
+        </div>
+        <div id="dsLoadedInfo" class="mt-3" style="display:none">
+          <div class="d-flex gap-3 flex-wrap">
+            <span class="badge-custom badge-blue"><i class="bi bi-grid"></i> <span id="infoRows">—</span> filas</span>
+            <span class="badge-custom badge-green"><i class="bi bi-list-columns"></i> <span id="infoCols">—</span> columnas</span>
+            <span class="badge-custom badge-purple" id="infoClasses">—</span>
+          </div>
+        </div>
+      </div>
 
-        // Cargar datasets
-        async function loadDatasets() {
-            const datasets = await api.getDatasets();
-            datasetSelect.innerHTML = '<option value="">Selecciona dataset</option>' +
-                datasets.map(ds => `<option value="${ds.id}">${ds.name}</option>`).join('');
-        }
+      <!-- Step 2: Features & Target -->
+      <div class="form-section mb-4" id="step2" style="opacity:.5;pointer-events:none">
+        <div class="form-section-title">
+          <span class="badge-custom badge-blue" style="width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.85rem">2</span>
+          Seleccionar Variables
+        </div>
+        <div class="row g-4">
+          <div class="col-md-8">
+            <label class="form-label-custom">
+              Variables de entrada (features)
+              <span class="badge-custom badge-blue ms-2" id="featCount">0 seleccionadas</span>
+            </label>
+            <div class="feature-grid" id="featureGrid">
+              <p style="color:var(--text-muted);font-size:.88rem">Carga un dataset primero</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label-custom">Variable objetivo (target)</label>
+            <select class="form-control-custom" id="targetSelect">
+              <option value="">-- Seleccionar --</option>
+            </select>
+            <div class="mt-3" id="targetClasses"></div>
+          </div>
+        </div>
+      </div>
 
-        // Al seleccionar dataset, cargar columnas
-        datasetSelect.addEventListener('change', async () => {
-            const id = datasetSelect.value;
-            if (!id) {
-                targetSelect.innerHTML = '<option value="">Primero elige dataset</option>';
-                targetSelect.disabled = true;
-                return;
-            }
-            targetSelect.disabled = false;
-            targetSelect.innerHTML = '<option value="">Cargando columnas...</option>';
-            const columns = await api.getDatasetColumns(id);
-            targetSelect.innerHTML = columns.map(col => `<option value="${col}">${col}</option>`).join('');
-        });
+      <!-- Step 3: Parameters -->
+      <div class="form-section mb-4" id="step3" style="opacity:.5;pointer-events:none">
+        <div class="form-section-title">
+          <span class="badge-custom badge-blue" style="width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.85rem">3</span>
+          Parámetros de Entrenamiento
+        </div>
+        <div class="row g-4">
+          <div class="col-md-6">
+            <label class="form-label-custom">División Train / Test — <strong id="trainPct">70%</strong> / <strong id="testPct">30%</strong></label>
+            <input type="range" id="splitSlider" min="50" max="90" value="70" step="5" oninput="updateSplit(this.value)" />
+            <div class="split-visual mt-2">
+              <div class="split-train" id="splitTrainBar" style="width:70%"></div>
+              <div class="split-test"></div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label-custom">Iteraciones máximas</label>
+            <input type="number" class="form-control-custom" id="maxIter" value="1000" min="100" max="10000" step="100"/>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label-custom">Nombre del modelo</label>
+            <input type="text" class="form-control-custom" id="modelName" placeholder="mi_modelo_v1"/>
+          </div>
+        </div>
+      </div>
 
-        // Entrenar
-        trainForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            trainingResult.innerHTML = '<div class="alert alert-info">Entrenando modelo, por favor espera...</div>';
-            const formData = new FormData();
-            formData.append('dataset_id', datasetSelect.value);
-            formData.append('target_column', targetSelect.value);
-            formData.append('test_size', testSize.value);
+      <!-- Train Button -->
+      <div class="d-flex gap-3 mb-4" id="trainBtnRow" style="opacity:.5;pointer-events:none">
+        <button class="btn-primary-custom flex-grow-1" id="btnTrain" onclick="trainModel()" style="padding:1rem;font-size:1rem">
+          <i class="bi bi-play-circle-fill"></i> Iniciar Entrenamiento
+        </button>
+        <button class="btn-outline-custom" onclick="resetForm()">
+          <i class="bi bi-arrow-counterclockwise"></i> Reiniciar
+        </button>
+      </div>
 
-            try {
-                const res = await api.trainModel(formData);
-                if (res.error) {
-                    trainingResult.innerHTML = `<div class="alert alert-danger">${res.error}</div>`;
-                    return;
-                }
-                let html = `<h6>ID de entrenamiento: ${res.training_id}</h6>`;
-                html += '<table class="table table-sm"><thead><tr><th>Métrica</th><th>Valor</th></tr></thead><tbody>';
-                for (let [k, v] of Object.entries(res.metrics)) {
-                    html += `<tr><td>${k}</td><td>${(v*100).toFixed(2)}%</td></tr>`;
-                }
-                html += '</tbody></table>';
-                html += `<p><strong>Explicación:</strong> ${res.explanation}</p>`;
-                html += `<p><small>Tiempo: ${res.elapsed}s | Muestras: ${res.n_samples} | Variables: ${res.n_features}</small></p>`;
-                trainingResult.innerHTML = html;
-            } catch (err) {
-                trainingResult.innerHTML = '<div class="alert alert-danger">Error de conexión con la API.</div>';
-            }
-        });
+      <!-- Results Panel -->
+      <div id="resultsPanel" style="display:none">
+        <!-- Accuracy Cards -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-md-3">
+            <div class="metric-card">
+              <div class="card-icon card-icon-blue mx-auto mb-1" style="width:40px;height:40px;font-size:1rem"><i class="bi bi-check-circle"></i></div>
+              <div class="metric-label">Train Accuracy</div>
+              <div class="metric-value" id="resTrainAcc" style="color:var(--blue-tech)">—</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="metric-card">
+              <div class="card-icon card-icon-green mx-auto mb-1" style="width:40px;height:40px;font-size:1rem"><i class="bi bi-check2-all"></i></div>
+              <div class="metric-label">Test Accuracy</div>
+              <div class="metric-value" id="resTestAcc" style="color:var(--success)">—</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="metric-card">
+              <div class="card-icon card-icon-cyan mx-auto mb-1" style="width:40px;height:40px;font-size:1rem"><i class="bi bi-database"></i></div>
+              <div class="metric-label">Train Samples</div>
+              <div class="metric-value" id="resTrainN" style="color:var(--cyan)">—</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="metric-card">
+              <div class="card-icon card-icon-purple mx-auto mb-1" style="width:40px;height:40px;font-size:1rem"><i class="bi bi-database-check"></i></div>
+              <div class="metric-label">Test Samples</div>
+              <div class="metric-value" id="resTestN" style="color:var(--purple)">—</div>
+            </div>
+          </div>
+        </div>
 
-        loadDatasets();
-    </script>
+        <!-- Coefficients -->
+        <div class="result-panel mb-4">
+          <div class="result-panel-header">
+            <span class="result-panel-title"><i class="bi bi-sliders"></i> Coeficientes del Modelo</span>
+            <span class="badge-custom badge-green" id="resModelName">—</span>
+          </div>
+          <div class="result-panel-body">
+            <div id="coefChart" style="margin-bottom:1.5rem"></div>
+            <canvas id="coefBarChart" height="120"></canvas>
+          </div>
+        </div>
+
+        <!-- Intercepts -->
+        <div class="result-panel mb-4">
+          <div class="result-panel-header">
+            <span class="result-panel-title"><i class="bi bi-intersect"></i> Interceptos por Clase</span>
+          </div>
+          <div class="result-panel-body" id="interceptTable"></div>
+        </div>
+
+        <!-- Actions after training -->
+        <div class="d-flex gap-3 flex-wrap">
+          <a href="evaluate.html" class="btn-primary-custom"><i class="bi bi-bar-chart-line"></i> Evaluar Este Modelo</a>
+          <a href="predict.html"  class="btn-outline-custom"><i class="bi bi-magic"></i> Hacer Predicciones</a>
+          <button class="btn-outline-custom" onclick="document.getElementById('resultsPanel').style.display='none';document.getElementById('trainBtnRow').style.opacity='1';document.getElementById('trainBtnRow').style.pointerEvents='auto'">
+            <i class="bi bi-plus-circle"></i> Nuevo Modelo
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="footer mt-5">
+  <div class="container">
+    <div class="footer-bottom">&copy; 2026 LogRegAI — Proyecto Final IA &amp; ML</div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="js/main.js"></script>
+<script src="js/train.js"></script>
 </body>
 </html>
