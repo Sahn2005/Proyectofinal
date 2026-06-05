@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acerca del Modelo - Clasificador IA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="sidebar-placeholder"></div>
+
+    <div class="container-fluid px-4 py-4" id="app">
+        <h2>Acerca del Modelo de Regresión Logística</h2>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5>¿Qué es la Regresión Logística?</h5>
+                <p>La Regresión Logística es un algoritmo de clasificación supervisada que estima la probabilidad de que una muestra pertenezca a una clase determinada. A pesar de su nombre, se usa para clasificación, no para regresión.</p>
+                
+                <h5>Funcionamiento</h5>
+                <p>El modelo calcula una combinación lineal de las características de entrada y luego aplica la función <strong>sigmoide</strong> para convertir ese valor en una probabilidad entre 0 y 1.</p>
+                <p><em>P(y=1) = 1 / (1 + e<sup>-(b0 + b1*x1 + b2*x2 + ...)</sup>)</em></p>
+                
+                <h5>Coeficientes</h5>
+                <p>Cada variable tiene un coeficiente (<em>b</em>) que indica su influencia en la predicción. Un coeficiente positivo aumenta la probabilidad de la clase positiva; uno negativo la reduce.</p>
+                
+                <h5>Ventajas</h5>
+                <ul>
+                    <li>Modelo simple e interpretable.</li>
+                    <li>Rápido de entrenar.</li>
+                    <li>Proporciona probabilidades calibradas.</li>
+                </ul>
+                
+                <h5>Métricas de evaluación</h5>
+                <ul>
+                    <li><strong>Accuracy:</strong> proporción de predicciones correctas.</li>
+                    <li><strong>Precision:</strong> de las predicciones positivas, cuántas son realmente positivas.</li>
+                    <li><strong>Recall:</strong> de los casos positivos reales, cuántos detectó el modelo.</li>
+                    <li><strong>F1 Score:</strong> media armónica entre precisión y recall.</li>
+                    <li><strong>AUC-ROC:</strong> capacidad del modelo para distinguir clases.</li>
+                </ul>
+                
+                <h5>Sobre este proyecto</h5>
+                <p>Esta aplicación fue desarrollada como proyecto universitario de Inteligencia Artificial. Utiliza Flask como backend, Scikit-learn para el modelo de ML, y una interfaz web moderna con Bootstrap 5.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        fetch('sidebar.html').then(r => r.text()).then(html => document.getElementById('sidebar-placeholder').innerHTML = html);
+    </script>
+</body>
+</html>

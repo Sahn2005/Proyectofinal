@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrenamiento - Clasificador IA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="sidebar-placeholder"></div>
+
+    <div class="container-fluid px-4 py-4" id="app">
+        <h2>Entrenar Modelo</h2>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <form id="trainForm">
+                            <div class="mb-3">
+                                <label class="form-label">Dataset</label>
+                                <select class="form-select" id="datasetSelect" required>
+                                    <option value="">Cargando...</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Variable objetivo</label>
+                                <select class="form-select" id="targetSelect" disabled required>
+                                    <option value="">Primero elige dataset</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Porcentaje para prueba (%)</label>
+                                <input type="number" class="form-control" id="testSize" value="20" min="5" max="50" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-cpu"></i> Entrenar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5>Resultado del entrenamiento</h5>
+                        <div id="trainingResult">Aquí aparecerán las métricas tras entrenar.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        fetch('sidebar.html').then(r => r.text()).then(html => document.getElementById('sidebar-placeholder').innerHTML = html);
+
+        const datasetSelect = document.getElementById('datasetSelect');
+        const targetSelect = document.getElementById('targetSelect');
+        const testSize = document.getElementById('testSize');
+        const trainForm = document.getElementById('trainForm');
+        const trainingResult = document.getElementById('trainingResult');
+
+        // Cargar datasets
+        async function loadDatasets() {
+            const datasets = await api.getDatasets();
+            datasetSelect.innerHTML = '<option value="">Selecciona dataset</option>' +
+                datasets.map(ds => `<option value="${ds.id}">${ds.name}</option>`).join('');
+        }
+
+        // Al seleccionar dataset, cargar columnas
+        datasetSelect.addEventListener('change', async () => {
+            const id = datasetSelect.value;
+            if (!id) {
+                targetSelect.innerHTML = '<option value="">Primero elige dataset</option>';
+                targetSelect.disabled = true;
+                return;
+            }
+            targetSelect.disabled = false;
+            targetSelect.innerHTML = '<option value="">Cargando columnas...</option>';
+            const columns = await api.getDatasetColumns(id);
+            targetSelect.innerHTML = columns.map(col => `<option value="${col}">${col}</option>`).join('');
+        });
+
+        // Entrenar
+        trainForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            trainingResult.innerHTML = '<div class="alert alert-info">Entrenando modelo, por favor espera...</div>';
+            const formData = new FormData();
+            formData.append('dataset_id', datasetSelect.value);
+            formData.append('target_column', targetSelect.value);
+            formData.append('test_size', testSize.value);
+
+            try {
+                const res = await api.trainModel(formData);
+                if (res.error) {
+                    trainingResult.innerHTML = `<div class="alert alert-danger">${res.error}</div>`;
+                    return;
+                }
+                let html = `<h6>ID de entrenamiento: ${res.training_id}</h6>`;
+                html += '<table class="table table-sm"><thead><tr><th>Métrica</th><th>Valor</th></tr></thead><tbody>';
+                for (let [k, v] of Object.entries(res.metrics)) {
+                    html += `<tr><td>${k}</td><td>${(v*100).toFixed(2)}%</td></tr>`;
+                }
+                html += '</tbody></table>';
+                html += `<p><strong>Explicación:</strong> ${res.explanation}</p>`;
+                html += `<p><small>Tiempo: ${res.elapsed}s | Muestras: ${res.n_samples} | Variables: ${res.n_features}</small></p>`;
+                trainingResult.innerHTML = html;
+            } catch (err) {
+                trainingResult.innerHTML = '<div class="alert alert-danger">Error de conexión con la API.</div>';
+            }
+        });
+
+        loadDatasets();
+    </script>
+</body>
+</html>

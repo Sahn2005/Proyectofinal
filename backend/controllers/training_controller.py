@@ -86,4 +86,11 @@ def training_detail(training_id):
     conn.close()
     if not row:
         return jsonify({'error': 'No encontrado'}), 404
-    return jsonify(dict(row))
+    # Si existe el modelo guardado, obtener feature_names
+    result = dict(row)
+    if row['model_path'] and os.path.exists(row['model_path']):
+        bundle = joblib.load(row['model_path'])
+        result['feature_names'] = bundle.get('feature_names', [])
+    else:
+        result['feature_names'] = []
+    return jsonify(result)

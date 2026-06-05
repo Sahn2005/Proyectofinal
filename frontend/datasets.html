@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datasets - Clasificador IA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="sidebar-placeholder"></div>
+
+    <div class="container-fluid px-4 py-4" id="app">
+        <h2>Gestión de Datasets</h2>
+
+        <!-- Subir dataset -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5>Subir nuevo dataset CSV</h5>
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="input-group">
+                        <input type="file" class="form-control" name="file" accept=".csv" required>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-cloud-upload"></i> Subir</button>
+                    </div>
+                </form>
+                <div id="uploadMessage" class="mt-2"></div>
+            </div>
+        </div>
+
+        <!-- Lista de datasets -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5>Datasets disponibles</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover" id="datasetsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="datasetsBody">
+                            <tr><td colspan="4">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vista previa del dataset (modal) -->
+        <div class="modal fade" id="datasetModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTitle">Vista previa</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body" id="modalBody">
+                        Cargando...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Cargar sidebar
+        fetch('sidebar.html').then(r => r.text()).then(html => document.getElementById('sidebar-placeholder').innerHTML = html);
+
+        const uploadForm = document.getElementById('uploadForm');
+        const uploadMessage = document.getElementById('uploadMessage');
+        const datasetsBody = document.getElementById('datasetsBody');
+
+        // Cargar datasets
+        async function loadDatasets() {
+            try {
+                const data = await api.getDatasets();
+                if (data.length === 0) {
+                    datasetsBody.innerHTML = '<tr><td colspan="4">No hay datasets. Sube uno o usa los de ejemplo.</td></tr>';
+                } else {
+                    datasetsBody.innerHTML = data.map(ds => `
+                        <tr>
+                            <td>${ds.id}</td>
+                            <td>${ds.name}</td>
+                            <td>${new Date(ds.uploaded_at).toLocaleString()}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-info" onclick="viewDataset(${ds.id})"><i class="bi bi-eye"></i></button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteDataset(${ds.id})"><i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (err) {
+                datasetsBody.innerHTML = '<tr><td colspan="4">Error al cargar datasets.</td></tr>';
+            }
+        }
+
+        // Subir dataset
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            uploadMessage.innerHTML = '<div class="alert alert-info">Subiendo...</div>';
+            const formData = new FormData(uploadForm);
+            try {
+                const res = await api.uploadDataset(formData);
+                if (res.error) {
+                    uploadMessage.innerHTML = `<div class="alert alert-danger">${res.error}</div>`;
+                } else {
+                    uploadMessage.innerHTML = '<div class="alert alert-success">Dataset subido correctamente.</div>';
+                    uploadForm.reset();
+                    loadDatasets();
+                }
+            } catch (err) {
+                uploadMessage.innerHTML = '<div class="alert alert-danger">Error de conexión.</div>';
+            }
+        });
+
+        // Ver dataset
+        async function viewDataset(id) {
+            try {
+                const res = await fetch(`${api.API_BASE}/datasets/${id}`);
+                const data = await res.json();
+                document.getElementById('modalTitle').textContent = data.name;
+                let html = `<p><strong>Filas:</strong> ${data.shape[0]} | <strong>Columnas:</strong> ${data.shape[1]}</p>`;
+                html += '<table class="table table-sm"><thead><tr>';
+                data.columns.forEach(col => html += `<th>${col}</th>`);
+                html += '</tr></thead><tbody>';
+                data.preview.forEach(row => {
+                    html += '<tr>';
+                    data.columns.forEach(col => html += `<td>${row[col]}</td>`);
+                    html += '</tr>';
+                });
+                html += '</tbody></table>';
+                document.getElementById('modalBody').innerHTML = html;
+                new bootstrap.Modal(document.getElementById('datasetModal')).show();
+            } catch (err) {
+                alert('Error al cargar dataset');
+            }
+        }
+
+        // Eliminar dataset
+        async function deleteDataset(id) {
+            if (!confirm('¿Eliminar este dataset?')) return;
+            try {
+                await api.deleteDataset(id);
+                loadDatasets();
+            } catch (err) {
+                alert('Error al eliminar');
+            }
+        }
+
+        loadDatasets();
+    </script>
+</body>
+</html>
