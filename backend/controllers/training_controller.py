@@ -34,7 +34,7 @@ def start_training():
         return jsonify({'error': 'Dataset no encontrado'}), 404
     df = pd.read_csv(ds['path'])
     if target not in df.columns:
-        return jsonify({'error': 'Columna objetivo inválida'}), 400
+        return jsonify({'error': 'Columna objetivo invalida'}), 400
     start = time.time()
     model, X_test, y_test, feature_names, preprocessor = train_logistic_regression(df, target, test_size)
     elapsed = round(time.time() - start, 3)

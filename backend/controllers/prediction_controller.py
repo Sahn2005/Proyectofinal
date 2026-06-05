@@ -83,7 +83,7 @@ def csv_predict(training_id):
     preds = model.classes_[np.argmax(probas, axis=1)]
     confidences = np.max(probas, axis=1)*100
     results = df.copy()
-    results['Predicción'] = preds
+    results['Prediccion'] = preds
     results['Confianza (%)'] = confidences.round(1)
     out_path = os.path.join('uploads', 'predictions_result.csv')
     results.to_csv(out_path, index=False)
