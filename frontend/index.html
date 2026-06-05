@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LogReg AI — Clasificación con Regresión Logística</title>
-  <meta name="description" content="Plataforma académica para entrenar, evaluar y desplegar modelos de Machine Learning basados en Regresión Logística. Curso de IA 2026." />
+  <title>LinReg AI — Predicción con Regresión Lineal</title>
+  <meta name="description" content="Plataforma académica para entrenar, evaluar y desplegar modelos de Machine Learning basados en Regresión Lineal. Curso de IA 2026." />
 
   <!-- Bootstrap 5 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
@@ -20,7 +20,7 @@
   <div class="container">
     <a class="navbar-brand" href="index.html">
       <div class="brand-icon">🧠</div>
-      LogReg<span class="brand-dot">AI</span>
+      LinReg<span class="brand-dot">AI</span>
     </a>
     <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-label="Toggle navigation">
       <span style="color:#fff;font-size:1.4rem"><i class="bi bi-list"></i></span>
@@ -58,10 +58,10 @@
       <div class="col-lg-6 hero-content">
         <div class="hero-badge"><i class="bi bi-stars"></i> IA &amp; Machine Learning 2026</div>
         <h1 class="hero-title">
-          Clasificación <br/><span class="gradient-text">Inteligente</span> con<br/>Regresión Logística
+          Predicción <br/><span class="gradient-text">Inteligente</span> con<br/>Regresión Lineal
         </h1>
         <p class="hero-subtitle">
-          Plataforma académica para entrenar, evaluar y desplegar modelos de Machine Learning orientados a problemas de clasificación. Visualiza, analiza y predice con precisión.
+          Plataforma académica para entrenar, evaluar y desplegar modelos de Machine Learning orientados a problemas de predicción. Visualiza, analiza y predice con precisión.
         </p>
         <div class="d-flex gap-3 flex-wrap">
           <a href="dashboard.html" class="btn-hero-primary">
@@ -79,7 +79,7 @@
       </div>
       <div class="col-lg-6">
         <div class="hero-chart-card">
-          <p class="hero-chart-label"><i class="bi bi-graph-up"></i> Curva Sigmoide — Regresión Logística</p>
+          <p class="hero-chart-label"><i class="bi bi-graph-up"></i> Curva Sigmoide — Regresión Lineal</p>
           <canvas id="heroSigmoid" height="220"></canvas>
           <div class="row mt-3 g-2">
             <div class="col-4">
@@ -131,8 +131,8 @@
             <div class="d-flex gap-3 align-items-start">
               <div class="card-icon card-icon-cyan" style="width:44px;height:44px;min-width:44px;font-size:1.2rem">🔀</div>
               <div>
-                <h4>Diferencia con Clasificación</h4>
-                <p style="font-size:.9rem;margin:0">Mientras la regresión predice valores continuos, la clasificación asigna etiquetas discretas como "Sí/No" o categorías.</p>
+                <h4>Diferencia con Predicción</h4>
+                <p style="font-size:.9rem;margin:0">Mientras la regresión predice valores continuos, la predicción asigna etiquetas discretas como "Sí/No" o categorías.</p>
               </div>
             </div>
           </div>
@@ -140,8 +140,8 @@
             <div class="d-flex gap-3 align-items-start">
               <div class="card-icon card-icon-purple" style="width:44px;height:44px;min-width:44px;font-size:1.2rem">🔗</div>
               <div>
-                <h4>Relación con Regresión Logística</h4>
-                <p style="font-size:.9rem;margin:0">La regresión logística toma la salida lineal y la transforma con la función sigmoide para producir probabilidades entre 0 y 1.</p>
+                <h4>Relación con Regresión Lineal</h4>
+                <p style="font-size:.9rem;margin:0">La regresión lineal toma la salida lineal y la transforma con la función sigmoide para producir probabilidades entre 0 y 1.</p>
               </div>
             </div>
           </div>
@@ -163,18 +163,18 @@
 </section>
 
 <!-- ── SECCIÓN 2: REGRESIÓN LOGÍSTICA ─────────────────────────────────────── -->
-<section class="section" id="logistica">
+<section class="section" id="lineal">
   <div class="container">
     <div class="text-center mb-5 reveal">
-      <div class="section-label mx-auto"><i class="bi bi-lightning-charge"></i> El Clasificador</div>
-      <h2 class="section-title">Regresión Logística como <span class="gradient-text">Clasificador</span></h2>
-      <p class="section-subtitle mx-auto text-center">Transforma probabilidades en decisiones de clasificación usando la función sigmoide.</p>
+      <div class="section-label mx-auto"><i class="bi bi-lightning-charge"></i> El Predictor</div>
+      <h2 class="section-title">Regresión Lineal como <span class="gradient-text">Predictor</span></h2>
+      <p class="section-subtitle mx-auto text-center">Transforma probabilidades en decisiones de predicción usando la función sigmoide.</p>
     </div>
     <div class="row g-4 mb-5">
       <div class="col-md-4 reveal">
         <div class="card-modern h-100 text-center">
           <div class="card-icon card-icon-blue mx-auto">🎯</div>
-          <h4>Clasificación Supervisada</h4>
+          <h4>Predicción Supervisada</h4>
           <p>Aprende de ejemplos etiquetados para predecir la categoría de nuevos datos desconocidos.</p>
         </div>
       </div>
@@ -188,7 +188,7 @@
       <div class="col-md-4 reveal">
         <div class="card-modern h-100 text-center">
           <div class="card-icon card-icon-green mx-auto">⚖️</div>
-          <h4>Clasificación Binaria</h4>
+          <h4>Predicción Binaria</h4>
           <p>Si P(y=1|x) &gt; 0.5, el modelo clasifica como positivo. De lo contrario, negativo.</p>
         </div>
       </div>
@@ -264,7 +264,7 @@
         <div class="card-modern h-100 text-center">
           <div class="card-icon card-icon-green mx-auto">🚀</div>
           <h4>4. Entrenamiento</h4>
-          <p style="font-size:.88rem">Scikit-Learn ajusta los coeficientes del modelo minimizando la función de pérdida logística.</p>
+          <p style="font-size:.88rem">Scikit-Learn ajusta los coeficientes del modelo minimizando la función de pérdida (MSE).</p>
         </div>
       </div>
     </div>
@@ -287,7 +287,7 @@
         <div class="flow-step">
           <div class="flow-step-icon">🧠</div>
           <div class="flow-step-title">Modelo</div>
-          <div class="flow-step-sub">LogReg Pipeline</div>
+          <div class="flow-step-sub">LinReg Pipeline</div>
         </div>
         <div class="flow-arrow">→</div>
         <div class="flow-step">
@@ -404,7 +404,7 @@
         <div class="app-card h-100">
           <div class="app-card-emoji">🏥</div>
           <div class="app-card-title">Diagnóstico Médico</div>
-          <div class="app-card-desc">Clasificación de tumores como benignos o malignos a partir de características celulares (Breast Cancer Dataset).</div>
+          <div class="app-card-desc">Predicción de tumores como benignos o malignos a partir de características celulares (Breast Cancer Dataset).</div>
         </div>
       </div>
       <div class="col-md-3 reveal">
@@ -555,7 +555,7 @@
   <div class="container">
     <div class="row g-4">
       <div class="col-lg-4">
-        <div class="footer-brand">🧠 LogRegAI</div>
+        <div class="footer-brand">🧠 LinRegAI</div>
         <p class="footer-desc">Plataforma académica de Machine Learning para el curso de Inteligencia Artificial 2026.</p>
       </div>
       <div class="col-lg-2">
@@ -581,7 +581,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      &copy; 2026 LogRegAI — Proyecto Final IA &amp; ML &nbsp;|&nbsp; Construido con 🧠 y ☕
+      &copy; 2026 LinRegAI — Proyecto Final IA &amp; ML &nbsp;|&nbsp; Construido con 🧠 y ☕
     </div>
   </div>
 </footer>
