@@ -15,7 +15,7 @@ def export_metrics_pdf(training_id, metrics):
     return path
 
 def export_results_excel(training_id, training_row):
-    data = {'Métrica': ['Accuracy','Precision','Recall','F1','AUC'],
+    data = {'Matrica': ['Accuracy','Precision','Recall','F1','AUC'],
             'Valor': [training_row['accuracy'], training_row['precision'], training_row['recall'],
                       training_row['f1_score'], training_row['auc']]}
     df = pd.DataFrame(data)
