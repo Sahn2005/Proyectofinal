@@ -3,7 +3,12 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 
 // ── API Config ───────────────────────────────────────────────────────────────
-const API_BASE = "http://localhost:5000";
+// ¡IMPORTANTE! Reemplaza "https://TU-BACKEND.onrender.com" con la URL real de tu Web Service en Render
+const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+const isTunnel = window.location.hostname.includes("loca.lt") || window.location.hostname.includes("trycloudflare.com") || window.location.hostname.includes("ngrok.io");
+const API_BASE = isLocalhost 
+  ? "http://localhost:5000" 
+  : (isTunnel ? window.location.origin : "https://proyectofinal-i2ch.onrender.com"); // <-- CAMBIA ESTO
 
 async function apiGet(path) {
   const res = await fetch(API_BASE + path);
@@ -31,7 +36,7 @@ async function apiUpload(path, formData) {
 }
 
 // ── Theme ────────────────────────────────────────────────────────────────────
-const THEME_KEY = "logreg-theme";
+const THEME_KEY = "linreg-theme";
 
 function applyTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);

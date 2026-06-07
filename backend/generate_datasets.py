@@ -3,7 +3,6 @@ Run this script once to generate the built-in dataset CSV files.
 Usage:  python generate_datasets.py
 """
 import os
-import pandas as pd
 from sklearn.datasets import load_iris, load_breast_cancer
 
 OUT_DIR = os.path.join(os.path.dirname(__file__), "datasets")

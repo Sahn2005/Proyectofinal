@@ -1,10 +1,8 @@
 import os
 import json
-import sqlite3
 from datetime import datetime
 
 import pandas as pd
-import numpy as np
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 
@@ -14,10 +12,10 @@ from services.eval_service import evaluate_model
 from services.predict_service import predict
 
 # ── App setup ──────────────────────────────────────────────────────────────
-BASE_DIR   = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
-MODEL_DIR  = os.path.join(BASE_DIR, "models")
-DS_DIR     = os.path.join(BASE_DIR, "datasets")
+MODEL_DIR = os.path.join(BASE_DIR, "models")
+DS_DIR = os.path.join(BASE_DIR, "datasets")
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(MODEL_DIR,  exist_ok=True)
@@ -101,12 +99,12 @@ def dataset_info(name):
 @app.post("/api/train")
 def train():
     body = request.get_json()
-    dataset_name  = body.get("dataset")
-    features      = body.get("features", [])
-    target        = body.get("target")
-    test_size     = float(body.get("test_size", 0.3))
-    max_iter      = int(body.get("max_iter", 1000))
-    model_name    = body.get("model_name", f"model_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}")
+    dataset_name = body.get("dataset")
+    features = body.get("features", [])
+    target = body.get("target")
+    test_size = float(body.get("test_size", 0.3))
+    max_iter = int(body.get("max_iter", 1000))
+    model_name = body.get("model_name", f"model_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}")
 
     if not dataset_name or not features or not target:
         return jsonify({"error": "dataset, features, y target son obligatorios"}), 400
@@ -174,14 +172,14 @@ def list_models():
 # ── Evaluation ────────────────────────────────────────────────────────────────
 @app.post("/api/evaluate")
 def evaluate():
-    body         = request.get_json()
-    model_id     = body.get("model_id")
+    body = request.get_json()
+    model_id = body.get("model_id")
     dataset_name = body.get("dataset")
 
     if not model_id:
         return jsonify({"error": "model_id es obligatorio"}), 400
 
-    db  = get_db()
+    db = get_db()
     row = db.execute(
         "SELECT * FROM trained_models WHERE id = ?", (model_id,)
     ).fetchone()
@@ -189,8 +187,8 @@ def evaluate():
         return jsonify({"error": "Modelo no encontrado"}), 404
 
     features = json.loads(row["features"])
-    target   = row["target"]
-    ds_name  = dataset_name or row["dataset"]
+    target = row["target"]
+    ds_name = dataset_name or row["dataset"]
 
     try:
         df = _load_dataset(ds_name)
@@ -213,14 +211,14 @@ def evaluate():
 # ── Prediction ────────────────────────────────────────────────────────────────
 @app.post("/api/predict")
 def make_prediction():
-    body     = request.get_json()
+    body = request.get_json()
     model_id = body.get("model_id")
-    inputs   = body.get("inputs", {})
+    inputs = body.get("inputs", {})
 
     if not model_id:
         return jsonify({"error": "model_id es obligatorio"}), 400
 
-    db  = get_db()
+    db = get_db()
     row = db.execute(
         "SELECT * FROM trained_models WHERE id = ?", (model_id,)
     ).fetchone()
@@ -254,6 +252,22 @@ def make_prediction():
     db.commit()
 
     return jsonify(result)
+
+
+# ── Frontend ───────────────────────────────────────────────────────────────────
+@app.route("/")
+def index():
+    return send_from_directory("../frontend", "index.html")
+
+
+@app.route("/<path:path>")
+def static_proxy(path):
+    base = os.path.join(BASE_DIR, "../frontend")
+    if os.path.exists(os.path.join(base, path)):
+        return send_from_directory(base, path)
+    if os.path.exists(os.path.join(base, path + ".html")):
+        return send_from_directory(base, path + ".html")
+    return "Not Found", 404
 
 
 # ── Run ────────────────────────────────────────────────────────────────────────
