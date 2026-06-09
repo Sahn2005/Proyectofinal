@@ -9,8 +9,8 @@
 
 | Componente | URL |
 |------------|-----|
-| Frontend (Vercel) | `https://tu-proyecto.vercel.app` |
-| Backend API (Render) | `https://tu-api.onrender.com` |
+| Frontend (Vercel) | https://proyectofinall-phi.vercel.app/ |
+| Backend API (Render) | https://proyectofinal-i2ch.onrender.com |
 
 ---
 
@@ -293,9 +293,6 @@ Predicción en tiempo real
 Proyecto Final — Curso de Inteligencia Artificial y Machine Learning 2026
 
 ---
-
-## URL
-https://proyectofinall-phi.vercel.app/
 
 
 
