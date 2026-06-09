@@ -294,9 +294,10 @@ Proyecto Final — Curso de Inteligencia Artificial y Machine Learning 2026
 
 ---
 
-## 📄 Licencia
+## URL
+https://proyectofinall-phi.vercel.app/
 
-MIT License — Libre para uso académico y educativo.
+
 
 
 
